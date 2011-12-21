@@ -1,12 +1,13 @@
 from random import random, randrange
 from kivy.app import App
 from kivy.graphics import Color, Ellipse, Line, Rectangle, Color, Translate
+
 from kivy.uix.scatter import Scatter
 from kivy.clock import Clock
 from kivy.graphics.transformation import Matrix
 from functools import partial
 from math import*
-
+from kivy.uix.stencilview import StencilView
 '''
 This script is intended to be standalone. To change curve, in update_chart()
 change, e.g:
@@ -17,17 +18,17 @@ To set scale and offset for fitting the wave to the screen, look into create_cha
 
 
 def sinx(x):
-    return 2*sin(2*3.142*(x-1/4))
+    return 2*sin(2*3.142*(x-1.0/4))
 def cosx(x):
     return 2*sin(3.142*(2-x))
 def tanx(x):
     return (sinx(x)/cosx(x))
 def cotx(x):
-    return (1/tanx(x))
+    return (1.0/tanx(x))
 def secx(x):
-    return (1/cosx(x))
+    return (1.0/cosx(x))
 def cosecx(x):
-    return (1/sinx(x))
+    return (1.0/sinx(x))
 def logx(x):
     return log10(x)
     
@@ -36,13 +37,22 @@ def update_chart(ctx, *largs):
     #update instruction set by index
     #to-do, update by instruction name.
     #step x value
-    ctx.x+=ctx.step
+    #if ctx.x < 2:
+    	#ctx.x+=ctx.step
+    #else:
+    	#ctx.x = 0.0
     #change the curve function
-    ctx.y = sinx(ctx.x)
-    ctx.instr[0].rgb = (randrange(0, 254, 1),random(), random())
+    ctx.x+=ctx.step
+    ctx.y = cotx(ctx.x)
+
+    #color
+    ctx.instr[0].rgb = (randrange(0, 254, 1),0, 0)
     
     #line
-    ctx.instr[1].points += (ctx.scaleX* ctx.x+ctx.offsetX, ctx.scaleY * ctx.y+ctx.offsetY)
+    pointX = ctx.scaleX * ctx.x + ctx.offsetX
+    pointY = ctx.scaleY * ctx.y + ctx.offsetY
+    
+    ctx.instr[1].points += (pointX, pointY )
     #ctx.instr[1].points +=(10,0)
     
     #ellipse
@@ -59,16 +69,19 @@ class VisualContext:
     def __init__(self):
         self.config = {}
 
-class VisualizationWidget(Scatter):
+class VisualizationWidget(StencilView,Scatter):
     def __init__(self, **kwargs):
-        super(VisualizationWidget, self).__init__(**kwargs) 
+       
+        super(VisualizationWidget, self).__init__(**kwargs)
+        
+         
         Clock.schedule_once(self.create_chart)
         self.ctx = VisualContext()
         
 
     def translate(self, instance):
        
-        self.apply_transform(Matrix().translate(-1, 0, 0))
+        self.apply_transform(Matrix().translate(1, 0, 0))
  
     def create_chart(self, *largs):
     	    
@@ -78,6 +91,8 @@ class VisualizationWidget(Scatter):
         self.ctx.x = 0.0
         self.ctx.y = 0.0
         self.ctx.step = 0.01
+        print self.width
+        self.ctx.width = self.width
         self.ctx.scaleX = 300
         self.ctx.scaleY = 100
         self.ctx.offsetX = -10
@@ -95,14 +110,15 @@ class VisualizationWidget(Scatter):
                 self.ctx.instr.append(Color(*c))                
                 self.ctx.instr.append(Line(points=(0,0),dash_length=0.1,pointsize=100))
                 self.ctx.instr.append(Ellipse(pos=(-100, -100 ), size=(d, d)))
-                
-        Clock.schedule_interval(self.translate, 1 / 60.)
+        
+        #to use translation remove StencilView, better way to do this.        
+        #Clock.schedule_interval(self.translate, 1 / 60.)
         Clock.schedule_interval(partial(update_chart, self.ctx), 1 / 60.)
 
 
 class VisualizationApp(App):
     def build(self):
-        graph = VisualizationWidget(size_hint = (None, None), size = (200,200))
+        graph = VisualizationWidget(pos=(100,0),size_hint=(None,None),size=(800,600))
         
         return graph
 
