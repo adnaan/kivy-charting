@@ -17,9 +17,9 @@ To set scale and offset for fitting the wave to the screen, look into create_cha
 
 
 def sinx(x):
-    return 2*math.sin(2*3.142*(x-1/4))
+    return 2*sin(2*3.142*(x-1/4))
 def cosx(x):
-    return 2*math.sin(3.142*(2-x))
+    return 2*sin(3.142*(2-x))
 def tanx(x):
     return (sinx(x)/cosx(x))
 def cotx(x):
@@ -38,7 +38,7 @@ def update_chart(ctx, *largs):
     #step x value
     ctx.x+=ctx.step
     #change the curve function
-    ctx.y = logx(ctx.x)
+    ctx.y = sinx(ctx.x)
     ctx.instr[0].rgb = (randrange(0, 254, 1),random(), random())
     
     #line
@@ -102,7 +102,7 @@ class VisualizationWidget(Scatter):
 
 class VisualizationApp(App):
     def build(self):
-        graph = VisualizationWidget()
+        graph = VisualizationWidget(size_hint = (None, None), size = (200,200))
         
         return graph
 
