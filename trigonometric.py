@@ -7,26 +7,43 @@ from kivy.graphics.transformation import Matrix
 from functools import partial
 import math
 
+'''
+This script is intended to be standalone. To change curve, in update_chart()
+change, e.g:
+ctx.y = sinx(x)
+To set scale and offset for fitting the wave to the screen, look into create_chart()
 
+'''
 
 
 def sinx(x):
-    return 2*math.sin(2*3.14*(x-1/4))
+    return 2*math.sin(2*3.142*(x-1/4))
+def cosx(x):
+    return 2*math.sin(3.142*(2-x))
+def tanx(x):
+    return (sinx(x)/cosx(x))
+def cotx(x):
+    return (1/tanx(x))
+def secx(x):
+    return (1/cosx(x))
+def cosecx(x):
+    return (1/sinx(x))
     
 def update_chart(ctx, *largs):
     
     #update instruction set by index
     #to-do, update by instruction name.
+    #step x value
     ctx.x+=ctx.step
-    #sine curve
-    ctx.y =  sinx(ctx.x)
+    #change the curve function
+    ctx.y =  secx(ctx.x)
     #color
-    ctx.instr[0].r = randrange(0, 254, 1)
-    ctx.instr[0].g = random()
-    ctx.instr[0].b = random()
+    ctx.instr[0].rgb = (randrange(0, 254, 1),random(), random())
+    
     #line
     ctx.instr[1].points += (ctx.scaleX* ctx.x+ctx.offsetX, ctx.scaleY * ctx.y+ctx.offsetY)
     #ctx.instr[1].points +=(10,0)
+    
     #ellipse
     ctx.instr[2].pos = (ctx.scaleX* ctx.x+ctx.offsetX, ctx.scaleY * ctx.y+ctx.offsetY)
     
