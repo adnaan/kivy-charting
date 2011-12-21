@@ -40,7 +40,7 @@ class VisualContext:
 class VisualizationWidget(Scatter):
     def __init__(self, **kwargs):
         super(VisualizationWidget, self).__init__(**kwargs) 
-        Clock.schedule_once(self.update_graph)
+        Clock.schedule_once(self.create_chart)
         self.ctx = VisualContext()
         
 
@@ -48,8 +48,8 @@ class VisualizationWidget(Scatter):
        
         self.apply_transform(Matrix().translate(-1, 0, 0))
  
-    def update_graph(self, *largs):
-    	global _ctx    
+    def create_chart(self, *largs):
+    	    
         #chart properties
         self.ctx.inputstats = 0
         self.ctx.stats = []
