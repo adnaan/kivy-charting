@@ -17,15 +17,19 @@ def update_chart(ctx, *largs):
     
     #update instruction set by index
     #to-do, update by instruction name.
-    ctx.x+=0.01
+    ctx.x+=ctx.step
     #sine curve
     ctx.y =  sinx(ctx.x)
-    ctx.statsr[0].r = randrange(0, 254, 1)
-    ctx.statsr[0].g = random()
-    ctx.statsr[0].b = random()
-    ctx.statsr[1].points += (300* ctx.x-10, 100 * ctx.y+200)
-    #ctx.statsr[1].points +=(10,0)
-    ctx.statsr[2].pos = (300* ctx.x-10, 100 * ctx.y+200)
+    #color
+    ctx.instr[0].r = randrange(0, 254, 1)
+    ctx.instr[0].g = random()
+    ctx.instr[0].b = random()
+    #line
+    ctx.instr[1].points += (ctx.scaleX* ctx.x+ctx.offsetX, ctx.scaleY * ctx.y+ctx.offsetY)
+    #ctx.instr[1].points +=(10,0)
+    #ellipse
+    ctx.instr[2].pos = (ctx.scaleX* ctx.x+ctx.offsetX, ctx.scaleY * ctx.y+ctx.offsetY)
+    
        
     
 
@@ -51,12 +55,16 @@ class VisualizationWidget(Scatter):
     def create_chart(self, *largs):
     	    
         #chart properties
-        self.ctx.inputstats = 0
-        self.ctx.stats = []
-        self.ctx.statsr = []
+       
+        self.ctx.instr = []
         self.ctx.x = 0.0
         self.ctx.y = 0.0
-         
+        self.ctx.step = 0.01
+        self.ctx.scaleX = 300
+        self.ctx.scaleY = 100
+        self.ctx.offsetX = -10
+        self.ctx.offsetY = 200
+         #instructions
         with self.canvas:
             
             c = (random(), random(), random())
@@ -65,10 +73,10 @@ class VisualizationWidget(Scatter):
             m = 64
             for x in xrange(64):
                 #instruction set for chart
-                self.ctx.stats.append(0)
-                self.ctx.statsr.append(Color(*c))                
-                self.ctx.statsr.append(Line(points=(0,0),dash_length=0.1,pointsize=100))
-                self.ctx.statsr.append(Ellipse(pos=(-100, -100 ), size=(d, d)))
+                
+                self.ctx.instr.append(Color(*c))                
+                self.ctx.instr.append(Line(points=(0,0),dash_length=0.1,pointsize=100))
+                self.ctx.instr.append(Ellipse(pos=(-100, -100 ), size=(d, d)))
                 
         Clock.schedule_interval(self.translate, 1 / 60.)
         Clock.schedule_interval(partial(update_chart, self.ctx), 1 / 60.)
